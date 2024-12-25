@@ -46,6 +46,9 @@ class User:
     def __repr__(self):
         return f'User("{self.username}")'
 
+    def __hash__(self):
+        return hash(self.username)
+
 
 class Reaction:
     def __init__(self, reaction: str, actor: User):
@@ -60,7 +63,10 @@ class Message:
         self.reactions = reactions if reactions else []
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}(sender: {self.sender}, \ntimestamp: {self.timestamp})\n"
+        return f"{self.__class__.__name__}(\n\tsender: {self.sender}, \n\ttimestamp: {self.timestamp})\n"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(sender: {self.sender})\n"
 
     @staticmethod
     def parseMessage(messageDict: TextMessageDict | MediaMessageDict, participants: dict[str, User]) -> "TextMessage | MediaMessage":
@@ -131,13 +137,20 @@ class MediaMessage(Message):
 
 class Conversation:
     def __init__(self, conversationPath: str):
-        participants, messages = Conversation.load_messages(conversationPath)
+        title, participants, messages = Conversation.load_messages(conversationPath)
 
+        self.title = title
         self.participants: list[User] = participants
         self.messages: list[TextMessage | MediaMessage] = messages
 
+    def getMessagesBetweenTime(self, startTimestampMs: int, endTimestampMs: int) -> list[TextMessage | MediaMessage]:
+        return [message for message in self.messages if startTimestampMs <= message.timestamp <= endTimestampMs]
+
+    def getMessagesFrom(self, user: User) -> list[TextMessage | MediaMessage]:
+        return [message for message in self.messages if message.sender == user]
+
     @staticmethod
-    def load_messages(conversationPath: str) -> tuple[list[User], list[TextMessage | MediaMessage]]:
+    def load_messages(conversationPath: str) -> tuple[str, list[User], list[TextMessage | MediaMessage]]:
         filePaths = []
 
         for file in os.listdir(conversationPath):
@@ -148,13 +161,16 @@ class Conversation:
 
         messages: list[TextMessage | MediaMessage] = []
         participants: dict[str, User] = {}
+        title = ""
 
         for path in filePaths:
             with open(path, "r") as f:
                 file = json.load(f)
 
-                # Setup participants
+                # Setup participants and title
                 if len(participants) == 0:
+                    title = file["title"]
+
                     for userDict in file["participants"]:
                         participants[userDict["name"]] = User(userDict["name"])
 
@@ -167,4 +183,6 @@ class Conversation:
                         print(messageDict, participants, sep="\n")
                         raise e
 
-        return participants, messages
+        messages.sort(key=lambda x: x.timestamp)
+
+        return title, participants, messages
