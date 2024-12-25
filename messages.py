@@ -3,10 +3,17 @@ import os
 import datetime
 from typing import *
 from dotenv import load_dotenv
+from enum import Enum
 
 load_dotenv()
 
 FILE_PATH = os.getenv("FILE_PATH")
+
+
+class MessageType(Enum):
+    UNKNOWN = 0
+    TEXT = 1
+    MEDIA = 2
 
 
 class ReactionDict(TypedDict):
@@ -58,6 +65,7 @@ class Reaction:
 
 class Message:
     def __init__(self, sender: User, timestamp: int, reactions: list[Reaction] | None = None):
+        self.messageType: MessageType = MessageType.UNKNOWN
         self.sender = sender
         self.timestamp = timestamp
         self.reactions = reactions if reactions else []
@@ -111,6 +119,7 @@ class TextMessage(Message):
     def __init__(self, sender: User, timestamp: int, reactions: list[Reaction] | None = None, content: str = ""):
         super().__init__(sender, timestamp, reactions)
 
+        self.messageType = MessageType.TEXT
         self.content = content
 
     def __str__(self) -> str:
@@ -128,6 +137,7 @@ class MediaMessage(Message):
     ):
         super().__init__(sender, timestamp, reactions)
 
+        self.messageType = MessageType.MEDIA
         self.imageLinks = imageLinks if imageLinks else []
         self.videoLinks = videoLinks if videoLinks else []
 
@@ -145,7 +155,7 @@ class Conversation:
             title, participants, messages = Conversation.load_messages(conversationPath)
 
         self.title = title
-        self.participants: list[User] = participants
+        self.participants: dict[str, User] = participants
         self.messages: list[TextMessage | MediaMessage] = messages
 
     def copy(self) -> Self:
@@ -165,6 +175,12 @@ class Conversation:
     def messagesFrom(self, user: User) -> Self:
         newConv = self.copy()
         newConv.messages = [message for message in self.messages if message.sender == user]
+        return newConv
+
+    def excludeParticipant(self, user: User) -> Self:
+        newConv = self.copy()
+        newConv.participants = {n: u for n, u in self.participants.items() if u != user}
+        newConv.messages = [message for message in self.messages if message.sender != user]
         return newConv
 
     @staticmethod
