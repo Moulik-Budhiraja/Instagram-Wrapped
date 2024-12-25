@@ -136,18 +136,36 @@ class MediaMessage(Message):
 
 
 class Conversation:
-    def __init__(self, conversationPath: str):
-        title, participants, messages = Conversation.load_messages(conversationPath)
+    def __init__(self, conversationPath: str | None):
+        title = None
+        participants = None
+        messages = None
+
+        if conversationPath != None:
+            title, participants, messages = Conversation.load_messages(conversationPath)
 
         self.title = title
         self.participants: list[User] = participants
         self.messages: list[TextMessage | MediaMessage] = messages
 
-    def getMessagesBetweenTime(self, startTimestampMs: int, endTimestampMs: int) -> list[TextMessage | MediaMessage]:
-        return [message for message in self.messages if startTimestampMs <= message.timestamp <= endTimestampMs]
+    def copy(self) -> Self:
+        newConv = Conversation(None)
 
-    def getMessagesFrom(self, user: User) -> list[TextMessage | MediaMessage]:
-        return [message for message in self.messages if message.sender == user]
+        newConv.title = self.title
+        newConv.participants = self.participants
+        newConv.messages = self.messages
+
+        return newConv
+
+    def messagesBetweenTime(self, startTimestampMs: int, endTimestampMs: int) -> Self:
+        newConv = self.copy()
+        newConv.messages = [message for message in self.messages if startTimestampMs <= message.timestamp <= endTimestampMs]
+        return newConv
+
+    def messagesFrom(self, user: User) -> Self:
+        newConv = self.copy()
+        newConv.messages = [message for message in self.messages if message.sender == user]
+        return newConv
 
     @staticmethod
     def load_messages(conversationPath: str) -> tuple[str, list[User], list[TextMessage | MediaMessage]]:
