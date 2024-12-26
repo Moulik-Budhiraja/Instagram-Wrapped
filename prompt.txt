@@ -1,0 +1,69 @@
+**Task:**  
+Categorize the following message into one of three categories: **normal**, **freaky**, or **insult**. Use the provided examples to guide your classification. If a message fits both **freaky** and **insult**, categorize it as **freaky**. **freaky** is explicitly designed to indicate something sexual, so something like "Bro say that one more time and imma eat you" would just be considered normal.
+
+**Examples:**
+
+- **Freaky:**
+  - im so down pookie bear
+  - my friend just told me he got touched by the final
+  - che102 final touched me
+  - Bro molests me ð­ð­
+  - rizz??
+
+- **Insult:**
+  - Fuck u
+  - You suck
+  - Yeah bro u kinda suck
+
+- **Normal:**
+  - Ask em out
+  - cuz u hadnt met me yet
+  - bros tryna imply sum
+  - Nicole goated at badminton
+  - Bro say that one more time and imma eat you
+
+**Instructions:**
+
+1. **Read the message carefully.**
+2. **Determine which category the message best fits based on the examples.**
+3. **If the message fits both **freaky** and **insult**, choose **freaky**.**
+4. **Respond with only the category name: `normal`, `freaky`, or `insult`. Do not include any additional text or explanation.**
+
+---
+
+**Example Usage:**
+
+**Message:**  
+`You suck at this game`
+
+**Category:**  
+`insult`
+
+---
+
+**Another Example:**
+
+**Message:**  
+`Bro molests me ð­ð­
+
+**Category:**  
+`freaky`
+
+---
+
+**And if a message fits both:**
+
+**Message:**  
+`Fuck u, my friend just told me he got touched by the final`
+
+**Category:**  
+`freaky`
+
+---
+
+### Categorize:
+
+**Message:**  
+`{}`
+
+**Category:**

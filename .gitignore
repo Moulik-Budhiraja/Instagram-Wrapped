@@ -1,3 +1,5 @@
 your_instagram_activity
 .env
 __pycache__
+messages.csv
+categorized_messages.csv

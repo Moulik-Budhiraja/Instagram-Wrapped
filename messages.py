@@ -158,6 +158,18 @@ class Conversation:
         self.participants: dict[str, User] = participants
         self.messages: list[TextMessage | MediaMessage] = messages
 
+    def __str__(self) -> str:
+        out = f"Conversation(\n\ttitle: {self.title}, \n\tparticipants: "
+
+        for name, user in self.participants.items():
+            out += f"\n\t\t{name}: {user},"
+        out += "\n)\n"
+
+        return out
+
+    def __repr__(self) -> str:
+        return f"Conversation(title: {self.title})"
+
     def copy(self) -> Self:
         newConv = Conversation(None)
 
